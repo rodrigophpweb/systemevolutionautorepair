@@ -9,7 +9,19 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style> 
+    <style>
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                -webkit-print-color-adjust: exact; /* se quiser manter cores */
+            }
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -30,12 +42,14 @@
             border: solid 3px #444;
             border-radius: 16px;
             align-items: center;
+            justify-content: space-between;
 
             figure {
-                width: 50%;
+                width: 40%;
+                margin: 0 auto;
 
                 img {
-                    width: 80%;
+                    width: 75%;
                     margin: 0 auto;
                     display: block;
                     margin-left: 5%;
@@ -43,7 +57,7 @@
             }
 
             ul {
-                width: 50%;
+                width: 55%;
                 list-style: none;
                 display: flex;
                 flex-direction: column;
@@ -61,7 +75,7 @@
         
         .sectionOs {
             text-align: center;
-            margin: 0.8rem 0;
+            margin: 0.6rem 0;
             display: flex;
             align-items: center;
             justify-content: space-around;
@@ -122,6 +136,10 @@
                     border-radius: 14px 0 0 0;
                 }
 
+                thead tr:first-child {
+                    border-bottom: solid 1px #000;
+                }
+
                 thead tr th:nth-child(3) {
                     border-radius: 0 14px 0 0;
                 }
@@ -133,6 +151,10 @@
                 tr {
                     border-bottom: solid 1px #000;
                 }
+
+                tr:last-child {
+                    border-bottom: none;
+                }
                 
                 tr th:nth-child(2), 
                 tr td:nth-child(2) {
@@ -141,13 +163,11 @@
                 }
 
                 th, td {
-                    padding: 0.5rem;
+                    padding: 0.35rem;
                     text-align: center;
                     text-transform: uppercase;
                     font-size: .75rem;
                 }
-
-
 
                 th {
                     font-weight: bold;
@@ -166,7 +186,7 @@
 
                 h2 {
                     font-family: "Michroma", sans-serif;
-                    font-size: 1rem;
+                    font-size: .5rem;
                     text-transform: uppercase;
                 }
 
@@ -215,14 +235,32 @@
             }
         }
     </style>
+    <script>
+        function imprimirConteudo() {
+            const conteudo = document.getElementById('conteudo-os').innerHTML;
+            const janela = window.open('', '', 'height=600,width=800');
+            janela.document.write('<html><head><title>Ordem de Serviço</title>');
+            janela.document.write('<style>@media print { body { margin: 0; } }</style>');
+            janela.document.write('</head><body>');
+            janela.document.write(conteudo);
+            janela.document.write('</body></html>');
+            janela.document.close();
+            janela.focus();
+            janela.print();
+            janela.close();
+        }
+    </script>
 </head>
 <body>
     <header>
         <figure>
             <img src="assets/images/logotipo-revolution-auto-repair-os.png" alt="Logotipo Evolution Auto Repair">
         </figure>
+
+        <!-- <div class="fio" style="width:2px; height:75px; background-color:#000; color:#000; border: solid 1px #000"></div> -->
+
         <ul>
-            <li><i class="bi bi-geo-alt-fill"></i> R. Plinio Salgado nº 50 Peri Peri - SP </li>
+            <li><i class="bi bi-geo-alt-fill"></i> R. Plínio Salgado, 50 - Jd. Peri Peri, 05537-080 - São Paulo - SP</li>
             <li><i class="bi bi-whatsapp"></i> 11 97432-6021</li>
             <li><i class="bi bi-building"></i> CNPJ: 48.309.644/0001-92</li>
         </ul>
@@ -246,11 +284,9 @@
             <span><strong>Endereço:</strong> Av. Eng. Heitor Antonio Eiras Garcia</span>
             <span><strong>N.</strong> 2651</span>
         </div>
-        <div class="line">
-            <span><strong>Complemento:</strong> C22</span>
-        </div>
 
         <div class="line">
+            <span><strong>Complemento:</strong> C22</span>
             <span><strong>CEP:</strong> 05564-000</span>
             <span><strong>Bairro:</strong> Peri Peri</span>
             <span><strong>Cidade:</strong> São Paulo</span>
@@ -334,6 +370,36 @@
                     <td>2</td>
                     <td>Alinhamento e Balanceamento</td>
                     <td>120,00</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Revisão Completa</td>
+                    <td>300,00</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Revisão Completa</td>
+                    <td>300,00</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Revisão Completa</td>
+                    <td>300,00</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Revisão Completa</td>
+                    <td>300,00</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Revisão Completa</td>
+                    <td>300,00</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Revisão Completa</td>
+                    <td>300,00</td>
                 </tr>
                 <tr>
                     <td>1</td>
