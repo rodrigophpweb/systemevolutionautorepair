@@ -1,10 +1,10 @@
 <?php
+require_once __DIR__ . '/config/db.php';
 // save_os.php
 header('Content-Type: application/json');
 
 try {
     // Conexão PDO com o banco de dados
-    $pdo = new PDO('mysql:host=localhost;dbname=oficina;charset=utf8mb4', 'root', '');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Recebe os dados brutos do corpo da requisição
@@ -27,7 +27,7 @@ try {
     $cliente_id = $pdo->lastInsertId();
 
     // --- 2. INSERIR VEÍCULO ---
-    $stmt = $pdo->prepare("INSERT INTO veiculos (modelo_id, fabricante_id, ano, placa, cor, chassi, combustivel, km, cliente_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO veiculos (modelo_id, fabricante_id, ano_fabricacao, placa, cor, chassi, tipo_combustivel, quilometragem, cliente_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([
         $data['veiculo']['modelo_id'],
         $data['veiculo']['fabricante_id'],
@@ -42,32 +42,38 @@ try {
     $veiculo_id = $pdo->lastInsertId();
 
     // --- 3. INSERIR OS ---
-    $stmt = $pdo->prepare("INSERT INTO os (cliente_id, veiculo_id, numero_os, data_os, danos, observacoes) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO os (cliente_id, veiculo_id, data_abertura, danos, observacoes, valor_total) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->execute([
         $cliente_id,
         $veiculo_id,
-        $data['os']['numero_os'],
         $data['os']['data_os'],
         $data['os']['danos'],
-        $data['os']['observacoes']
+        $data['os']['observacoes'],
+        $data['os']['valor_total'] ?? 0 // Valor total pode ser opcional
     ]);
     $os_id = $pdo->lastInsertId();
 
     // --- 4. INSERIR ITENS DA OS ---
-    $stmt = $pdo->prepare("INSERT INTO itens_os (os_id, descricao, quantidade, valor_unitario, total) VALUES (?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO itens_os (os_id, descricao, quantidade, valor_unitario) VALUES (?, ?, ?, ?)");
     foreach ($data['itens'] as $item) {
         $stmt->execute([
             $os_id,
             $item['descricao'],
             $item['quantidade'],
-            $item['valor_unitario'],
-            $item['total']
+            $item['valor_unitario']
         ]);
     }
+
+    $totalGeral = array_reduce($data['itens'], function($soma, $item) {
+        return $soma + ($item['quantidade'] * $item['valor_unitario']);
+    }, 0);
+
+    $stmt = $pdo->prepare("UPDATE os SET valor_total = ? WHERE id = ?");
+    $stmt->execute([$totalGeral, $os_id]);
 
     echo json_encode(['status' => 'success', 'message' => 'Ordem de serviço gerada com sucesso.']);
 
 } catch (PDOException $e) {
-    echo json_encode(['status' => 'error', 'message' => 'Erro: ' . $e->getMessage()]);
     http_response_code(500);
+    echo json_encode(['status' => 'error', 'message' => 'Erro: ' . $e->getMessage()]);
 }

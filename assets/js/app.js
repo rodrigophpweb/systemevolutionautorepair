@@ -99,18 +99,13 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById("sugestoes-modelo").innerHTML = "";
     }
 
-    // app.js
-
-// app.js ajustado para campos com prefixos reais
-
-  document.getElementById('form-os').addEventListener('submit', async function (e) {
+  document.getElementById("form-os").addEventListener("submit", async function (e) {
     e.preventDefault();
-
     const form = e.target;
 
     const cliente = {
       nome: form['cliente_nome'].value,
-      email: '', // não existe campo email no formulário atual
+      email: '', // não existe campo email
       telefone: form['cliente_telefone'].value,
       cep: form['cliente_cep'].value,
       endereco: form['cliente_endereco'].value,
@@ -140,43 +135,44 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const itens = [];
-    document.querySelectorAll('#lista-itens tr').forEach(row => {
-      const descricao = row.querySelector('.descricao').textContent;
-      const quantidade = parseInt(row.querySelector('.quantidade').textContent);
-      const valor_unitario = parseFloat(row.querySelector('.valor_unitario').textContent);
-      const total = parseFloat(row.querySelector('.total').textContent);
+    const rows = document.querySelectorAll("#tabelaItens tbody tr");
+    rows.forEach(row => {
+      const descricao = row.querySelector('input[name="item_descricao[]"]').value;
+      const quantidade = parseInt(row.querySelector('input[name="item_qtd[]"]').value);
+      const valor_unitario = parseFloat(row.querySelector('input[name="item_valor[]"]').value);
+      const total = quantidade * valor_unitario;
 
       itens.push({ descricao, quantidade, valor_unitario, total });
     });
 
     try {
-      const response = await fetch('save_os.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("save_os.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cliente, veiculo, os, itens })
       });
 
       const result = await response.json();
+      const alertDiv = document.getElementById("alert-msg");
+      alertDiv.classList.remove("d-none", "alert-danger", "alert-success");
 
-      const alertDiv = document.getElementById('alert-msg');
-      alertDiv.classList.remove('d-none', 'alert-danger', 'alert-success');
-
-      if (result.status === 'success') {
-        alertDiv.classList.add('alert-success');
+      if (result.status === "success") {
+        alertDiv.classList.add("alert-success");
         alertDiv.textContent = result.message;
         form.reset();
-        document.querySelector('#lista-itens').innerHTML = '';
+        document.querySelector("#tabelaItens tbody").innerHTML = "";
       } else {
-        alertDiv.classList.add('alert-danger');
+        alertDiv.classList.add("alert-danger");
         alertDiv.textContent = result.message;
       }
     } catch (err) {
-      const alertDiv = document.getElementById('alert-msg');
-      alertDiv.classList.remove('d-none');
-      alertDiv.classList.add('alert-danger');
-      alertDiv.textContent = 'Erro ao enviar dados.';
+      const alertDiv = document.getElementById("alert-msg");
+      alertDiv.classList.remove("d-none");
+      alertDiv.classList.add("alert-danger");
+      alertDiv.textContent = "Erro ao enviar dados.";
     }
   });
+
 });
 
 document.getElementById("cliente_cep").addEventListener("blur", function () {
